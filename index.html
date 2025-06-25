@@ -203,7 +203,7 @@
       dados = data;
     } else {
       consultores.forEach(nome => {
-        dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2 };
+        dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
       });
       firebase.database().ref("painel").set(dados);
     }
@@ -230,6 +230,7 @@
     consultores.forEach(nome => {
       dados[nome].vendas = 0;
       dados[nome].compromisso = 2;
+      dados[nome].foiCelebrado = false;
     });
     firebase.database().ref("painel").set(dados);
   }
@@ -263,7 +264,12 @@
       const tr = document.createElement("tr");
       if (faltamDia <= 0 && vendas > 0) {
         tr.classList.add("meta-ok");
-        mostrarFogos(nome);
+
+        if (!dados[nome].foiCelebrado) {
+          mostrarFogos(nome);
+          dados[nome].foiCelebrado = true;
+          firebase.database().ref(`painel/${nome}`).update({ foiCelebrado: true });
+        }
       }
       tr.innerHTML = `
         <td>${nome}</td>
