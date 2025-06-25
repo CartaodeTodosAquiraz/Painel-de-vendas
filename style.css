@@ -1,0 +1,43 @@
+body {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+  pointer-events: none;
+}
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table.table {
+  min-width: 600px; /* evita quebra excessiva */
+  width: 100%;
+}
+.logo-aquiraz {
+  height: 100px;
+  max-width: 180px;
+}
+
+.titulo-painel {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #004d40;
+}
+
+@media (max-width: 768px) {
+  .logo-aquiraz {
+    height: 70px;
+  }
+  .titulo-painel {
+    font-size: 1.4rem;
+  }
+}

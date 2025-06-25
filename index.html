@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Vendas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #b2ff59, #00e676);
+      padding: 20px;
+      color: #004d40;
+    }
+    .meta-ok {
+      border: 3px solid #4caf50;
+    }
+    .ranking {
+      background-color: #fff3cd;
+    }
+    .fireworks {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      display: none;
+    }
+    .fireworks img {
+      max-width: 200px;
+      border-radius: 50%;
+      border: 5px solid white;
+    }
+    #admin-panel {
+      display: none;
+    }
+    header img {
+      height: 150px; /* Aumente para o tamanho desejado */
+      max-width: 150px;
+    }
+    #efeito-fogos {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+}
+
+    #efeito-fogos canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    #efeito-fogos .content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+}
+
+    #efeito-fogos img {
+      max-width: 400px;
+      border-radius: 50%;
+      border: 8px solid white;
+      margin-bottom: 20px;
+    }
+
+    #efeito-fogos h2 {
+      color: white;
+      font-size: 2rem;
+    }
+    .container {
+      max-width: 100%;
+      padding-left: 10px;
+      padding-right: 10px;
+}
+@media (max-width: 768px) {
+  th, td {
+    font-size: 14px;
+    padding: 6px;
+  }
+  header h1 {
+    font-size: 1.3rem;
+  }
+}
+
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="d-flex flex-column align-items-center text-center mb-4">
+      <img src="Logo Aquiraz.png" alt="Logo Aquiraz" class="logo-aquiraz mb-2" />
+      <h1 class="titulo-painel">Painel de Vendas - CDT Aquiraz</h1>
+    </header>
+
+
+    <div class="table-responsive">
+      <table class="table table-bordered text-center">
+        <thead class="table-success">
+          <tr>
+            <th>Consultor</th>
+            <th>Vendas do Dia</th>
+            <th>Faltam para Meta do Mês</th>
+            <th>Faltam para Compromisso do Dia</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-consultores"></tbody>
+        <tfoot>
+          <tr class="table-info">
+            <td><strong>Total</strong></td>
+            <td id="total-dia">0</td>
+            <td id="total-meta">0</td>
+            <td id="total-compromisso">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+
+    <!-- Dentro do <body> do painel -->
+
+
+    <h3 class="mt-4">Ranking</h3>
+    <ol id="ranking" class="list-group list-group-numbered mb-5"></ol>
+
+    <div id="login-panel" class="border p-4 rounded bg-light mb-4">
+      <h4>Login Administrativo</h4>
+      <input type="password" id="senha-admin" class="form-control mb-2" placeholder="Digite a senha" />
+      <button class="btn btn-primary" onclick="verificarSenha()">Entrar</button>
+      <div id="erro-senha" class="text-danger mt-2" style="display:none;">Senha incorreta!</div>
+    </div>
+
+    <div id="admin-panel" class="border p-4 rounded bg-light">
+      <h4>Painel Administrativo</h4>
+      <p><em>Somente para gestores</em></p>
+      <div class="mb-2">
+        <label for="consultor-select">Consultor:</label>
+        <select id="consultor-select" class="form-select"></select>
+      </div>
+      <div class="mb-2">
+        <label for="vendas-dia">Vendas do dia:</label>
+        <input type="number" id="vendas-dia" class="form-control" />
+      </div>
+      <div class="mb-2">
+        <label for="compromisso-dia">Compromisso do dia:</label>
+        <input type="number" id="compromisso-dia" class="form-control" />
+      </div>
+      <div class="mb-2">
+        <label for="meta-mes">Meta do mês:</label>
+        <input type="number" id="meta-mes" class="form-control" />
+      </div>
+      <button class="btn btn-success me-2" onclick="atualizarVendas()">Atualizar</button>
+      <button class="btn btn-danger me-2" onclick="resetarDia()">Zerar Tudo</button>
+    </div>
+  </div>
+
+  <div class="fireworks" id="efeito-fogos">
+    <canvas id="Canvas"></canvas>
+    <div class="content">
+      <img src="Davi.jpg" alt="Foto do Consultor" id="foto-consultor" />
+      <h2>Meta Batida! 🎉</h2>
+    </div>
+  </div>
+
+<!-- Firebase SDKs - Compat Mode -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCOm6YtRRTv9uA65XCdttaCKFnpnafKMZE",
+    authDomain: "painel-de-vendas-ce678.firebaseapp.com",
+    projectId: "painel-de-vendas-ce678",
+    storageBucket: "painel-de-vendas-ce678.appspot.com",
+    messagingSenderId: "588848423641",
+    appId: "1:588848423641:web:1b19d5376cd06d1455d4c8",
+    databaseURL: "https://painel-de-vendas-ce678-default-rtdb.firebaseio.com"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+  const consultores = [
+    "Ligia", "Alex", "Davi", "Lais", "Elinar", "Manu", "Lara",
+    "Lidia", "Eduarda", "Fernanda", "Adriele", "Claudia", "Paloma", "Administração"
+  ];
+
+  let dados = {};
+
+  firebase.database().ref("painel").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      dados = data;
+    } else {
+      consultores.forEach(nome => {
+        dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2 };
+      });
+      firebase.database().ref("painel").set(dados);
+    }
+    renderTabela();
+  });
+
+  function atualizarVendas() {
+    const nome = document.getElementById("consultor-select").value;
+    const vendas = parseInt(document.getElementById("vendas-dia").value) || 0;
+    const compromisso = parseInt(document.getElementById("compromisso-dia").value) || 0;
+    const meta = parseInt(document.getElementById("meta-mes").value);
+
+    if (nome && dados[nome]) {
+      dados[nome].vendas = vendas;
+      if (compromisso > 0) dados[nome].compromisso = compromisso;
+      if (!isNaN(meta)) dados[nome].metaMes = meta;
+
+      // Atualiza no Firebase
+      firebase.database().ref("painel").set(dados);
+    }
+  }
+
+  function resetarDia() {
+    consultores.forEach(nome => {
+      dados[nome].vendas = 0;
+      dados[nome].compromisso = 2;
+    });
+    firebase.database().ref("painel").set(dados);
+  }
+
+  function mostrarFogos(nome) {
+    const fogos = document.getElementById("efeito-fogos");
+    const foto = document.getElementById("foto-consultor");
+    const nomeArquivo = nome.replace(/ /g, '_');
+    foto.src = `fotos/${nomeArquivo}.jpg`;
+
+    fogos.style.display = "flex";
+    if (typeof iniciarFogos === 'function') iniciarFogos();
+
+    setTimeout(() => {
+      fogos.style.display = "none";
+      if (typeof pararFogos === 'function') pararFogos();
+    }, 40000); // 40 segundos
+  }
+
+  function renderTabela() {
+    const tbody = document.getElementById("tabela-consultores");
+    tbody.innerHTML = "";
+    let totalDia = 0, totalMeta = 0, totalCompromisso = 0;
+    let ranking = [];
+
+    for (let nome of consultores) {
+      if (!dados[nome]) continue;
+      const { vendas, metaMes, compromisso } = dados[nome];
+      const faltamMes = Math.max(metaMes - vendas, 0);
+      const faltamDia = Math.max(compromisso - vendas, 0);
+      const tr = document.createElement("tr");
+      if (faltamDia <= 0 && vendas > 0) {
+        tr.classList.add("meta-ok");
+        mostrarFogos(nome);
+      }
+      tr.innerHTML = `
+        <td>${nome}</td>
+        <td>${vendas}</td>
+        <td>${faltamMes}</td>
+        <td>${faltamDia}</td>
+      `;
+      tbody.appendChild(tr);
+
+      totalDia += vendas;
+      totalMeta += faltamMes;
+      totalCompromisso += faltamDia;
+      ranking.push({ nome, vendas });
+    }
+
+    document.getElementById("total-dia").innerText = totalDia;
+    document.getElementById("total-meta").innerText = totalMeta;
+    document.getElementById("total-compromisso").innerText = totalCompromisso;
+
+    ranking.sort((a, b) => b.vendas - a.vendas);
+    const ol = document.getElementById("ranking");
+    ol.innerHTML = "";
+    ranking.slice(0, 3).forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = `${p.nome} - ${p.vendas} vendas`;
+      li.classList.add("ranking", "list-group-item");
+      ol.appendChild(li);
+    });
+  }
+
+  function iniciarPainel() {
+    const select = document.getElementById("consultor-select");
+    consultores.forEach(nome => {
+      const opt = document.createElement("option");
+      opt.value = nome;
+      opt.textContent = nome;
+      select.appendChild(opt);
+    });
+  }
+
+  function verificarSenha() {
+  const senha = document.getElementById("senha-admin").value;
+  if (senha === "1234") {
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("login-panel").style.display = "none";
+  } else {
+    document.getElementById("erro-senha").style.display = "block";
+  }
+}
+
+iniciarPainel();
+
+
+  iniciarPainel();
+
+</script>
+
+  <script src="app.js"></script>
+</body>
+</html>
