@@ -198,15 +198,17 @@
 if (data) {
   dados = data;
 
-  // Adiciona automaticamente consultores que ainda não existem no banco
+  // Atualiza apenas os consultores que não existem (sem sobrescrever o restante)
   consultores.forEach(nome => {
     if (!dados[nome]) {
-      dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
+      const novoConsultor = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
+      firebase.database().ref(`painel/${nome}`).set(novoConsultor);
+      dados[nome] = novoConsultor;
     }
   });
+}
 
-  firebase.database().ref("painel").set(dados); // atualiza o Firebase
-} else {
+ else {
   // Primeiro uso: cria todos os consultores
   consultores.forEach(nome => {
     dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
