@@ -195,27 +195,32 @@
     "Lidia", "Eduarda", "Fernanda", "Adriele", "Claudia", "Paloma", "Nivia", "Luana", "Administração"
   ];
 
-if (data) {
-  dados = data;
+let dados = {};
 
-  // Atualiza apenas os consultores que não existem (sem sobrescrever o restante)
-  consultores.forEach(nome => {
-    if (!dados[nome]) {
-      const novoConsultor = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
-      firebase.database().ref(`painel/${nome}`).set(novoConsultor);
-      dados[nome] = novoConsultor;
-    }
-  });
-}
+firebase.database().ref("painel").on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    dados = data;
 
- else {
-  // Primeiro uso: cria todos os consultores
-  consultores.forEach(nome => {
-    dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
-  });
-  firebase.database().ref("painel").set(dados);
-}
+    // Adiciona automaticamente consultores novos
+    consultores.forEach(nome => {
+      if (!dados[nome]) {
+        const novoConsultor = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
+        firebase.database().ref(`painel/${nome}`).set(novoConsultor);
+        dados[nome] = novoConsultor;
+      }
+    });
 
+    renderTabela();
+  } else {
+    // Primeiro uso
+    consultores.forEach(nome => {
+      dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
+    });
+    firebase.database().ref("painel").set(dados);
+    renderTabela();
+  }
+});
 
   function atualizarVendas() {
     const nome = document.getElementById("consultor-select").value;
