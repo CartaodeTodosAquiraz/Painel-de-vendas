@@ -195,32 +195,20 @@
     "Lidia", "Eduarda", "Fernanda", "Adriele", "Claudia", "Paloma", "Nivia", "Luana", "Administração"
   ];
 
-let dados = {};
+  let dados = {};
 
-firebase.database().ref("painel").on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    dados = data;
-
-    // Adiciona automaticamente consultores novos
-    consultores.forEach(nome => {
-      if (!dados[nome]) {
-        const novoConsultor = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
-        firebase.database().ref(`painel/${nome}`).set(novoConsultor);
-        dados[nome] = novoConsultor;
-      }
-    });
-
+  firebase.database().ref("painel").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      dados = data;
+    } else {
+      consultores.forEach(nome => {
+        dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
+      });
+      firebase.database().ref("painel").set(dados);
+    }
     renderTabela();
-  } else {
-    // Primeiro uso
-    consultores.forEach(nome => {
-      dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
-    });
-    firebase.database().ref("painel").set(dados);
-    renderTabela();
-  }
-});
+  });
 
   function atualizarVendas() {
     const nome = document.getElementById("consultor-select").value;
