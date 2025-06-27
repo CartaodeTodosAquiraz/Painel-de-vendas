@@ -195,20 +195,25 @@
     "Lidia", "Eduarda", "Fernanda", "Adriele", "Claudia", "Paloma", "Nivia", "Luana", "Administração"
   ];
 
-  let dados = {};
+if (data) {
+  dados = data;
 
-  firebase.database().ref("painel").on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (data) {
-      dados = data;
-    } else {
-      consultores.forEach(nome => {
-        dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
-      });
-      firebase.database().ref("painel").set(dados);
+  // Adiciona automaticamente consultores que ainda não existem no banco
+  consultores.forEach(nome => {
+    if (!dados[nome]) {
+      dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
     }
-    renderTabela();
   });
+
+  firebase.database().ref("painel").set(dados); // atualiza o Firebase
+} else {
+  // Primeiro uso: cria todos os consultores
+  consultores.forEach(nome => {
+    dados[nome] = { vendas: 0, metaMes: 30, compromisso: 2, foiCelebrado: false };
+  });
+  firebase.database().ref("painel").set(dados);
+}
+
 
   function atualizarVendas() {
     const nome = document.getElementById("consultor-select").value;
