@@ -10,5 +10,11 @@
     "metaMes": 30,
     "compromisso": 2,
     "foiCelebrado": false
+  },
+    "Kennedy": {
+    "vendas": 0,
+    "metaMes": 30,
+    "compromisso": 2,
+    "foiCelebrado": false
   }
 }
