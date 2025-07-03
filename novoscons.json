@@ -1,20 +1,16 @@
 {
-  "Nivia": {
-    "vendas": 0,
-    "metaMes": 30,
-    "compromisso": 2,
-    "foiCelebrado": false
-  },
-  "Luana": {
-    "vendas": 0,
-    "metaMes": 30,
-    "compromisso": 2,
-    "foiCelebrado": false
-  },
-    "Kennedy": {
-    "vendas": 0,
-    "metaMes": 30,
-    "compromisso": 2,
-    "foiCelebrado": false
-  }
+  "Ligia": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Alex": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Davi": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Lais": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Elinar": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Manu": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Kennedy": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Lidia": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Fernanda": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Nivia": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Luana": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Claudia": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Paloma": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false },
+  "Administração": { "vendas": 0, "metaMes": 30, "compromisso": 2, "foiCelebrado": false }
 }
